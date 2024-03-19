@@ -4,21 +4,18 @@ const bodyParser = require('body-parser');
 const multer = require('multer');
 const { MongoClient } = require('mongodb');
 const cors = require('cors');
+const { default: mongoose } = require('mongoose');
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(express.static('public'));
 app.use(cors());
 
-const mongoURI = process.env.MONGODB_URI || 'mongodb://localhost:27017/CrudDB'; // MongoDB connection URI
+const mongoURI = 'mongodb+srv://vaibhavkw2001:1234@cluster0.eqpfhck.mongodb.net/formsData?retryWrites=true&w=majority&appName=Cluster0';
+mongoose.connect(mongoURI,{ useNewUrlParser: true, useUnifiedTopology: true }).then(()=>{
+    console.log('connection successfull')
+}).catch((err)=> console.log(err));
 
-let db;
-MongoClient.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
-    .then(client => {
-        console.log('Connected to MongoDB');
-        db = client.db();
-    })
-    .catch(err => console.error('Error connecting to MongoDB:', err));
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -31,11 +28,11 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
-app.get('/msg',(req,res)=>{
-  res.status(200).send({
-    msg: "api's are working successfully"
-  })
-})
+app.get('/msg', (req, res) => {
+    res.status(200).send({
+        msg: "APIs are working successfully"
+    })
+});
 
 app.post('/sendMsg', async (req, res) => {
     const formData = req.body;
@@ -44,8 +41,8 @@ app.post('/sendMsg', async (req, res) => {
         const client = new MongoClient(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true });
         await client.connect();
 
-        const db = client.db();
-        const collection1 = db.collection('employees');
+        const db = client.db('formsData'); 
+        const collection1 = db.collection('contactData');
 
         await collection1.insertOne(formData);
         res.send('Data inserted successfully into collection1');
@@ -58,10 +55,10 @@ app.post('/sendMsg', async (req, res) => {
 });
 
 app.post('/submit_form', upload.fields([
-    { name: 'uploadPhoto', maxCount: 1 }, 
-    { name: 'uploadCV', maxCount: 1 }, 
+    { name: 'uploadPhoto', maxCount: 1 },
+    { name: 'uploadCV', maxCount: 1 },
     { name: 'uploadCertificates', maxCount: 5 }
-  ]), async (req, res) => {
+]), async (req, res) => {
     const formData = req.body;
     const files = req.files;
 
@@ -69,8 +66,8 @@ app.post('/submit_form', upload.fields([
         const client = new MongoClient(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true });
         await client.connect();
 
-        const db = client.db();
-        const collection2 = db.collection('teacherdatas');
+        const db = client.db('formsData'); 
+        const collection2 = db.collection('teacherData');
 
         const data = {
             formData: formData,
@@ -81,8 +78,6 @@ app.post('/submit_form', upload.fields([
 
         await collection2.insertOne(data);
         res.send('Data inserted successfully into collection2');
-
-        await client.close();
     } catch (err) {
         console.error('Error:', err);
         res.status(500).send('Internal Server Error');
@@ -96,13 +91,11 @@ app.post('/enroll', async (req, res) => {
         const client = new MongoClient(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true });
         await client.connect();
 
-        const db = client.db();
-        const collection3 = db.collection('enrollforms');
+        const db = client.db('formsData'); 
+        const collection3 = db.collection('quickForm');
 
         await collection3.insertOne(formData);
         res.send('Data inserted successfully into collection3');
-
-        await client.close();
     } catch (err) {
         console.error('Error:', err);
         res.status(500).send('Internal Server Error');
