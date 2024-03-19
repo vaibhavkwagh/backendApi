@@ -31,6 +31,12 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
+app.get('/msg',(req,res)=>{
+  res.status(200).send({
+    msg: "api's are working successfully"
+  })
+})
+
 app.post('/sendMsg', async (req, res) => {
     const formData = req.body;
 
