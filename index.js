@@ -17,16 +17,16 @@ mongoose.connect(mongoURI,{ useNewUrlParser: true, useUnifiedTopology: true }).t
 }).catch((err)=> console.log(err));
 
 
-const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        cb(null, 'uploads/')
-    },
-    filename: function (req, file, cb) {
-        cb(null, Date.now() + '-' + file.originalname)
-    }
-});
+// const storage = multer.diskStorage({
+//     destination: function (req, file, cb) {
+//         cb(null, 'uploads/')
+//     },
+//     filename: function (req, file, cb) {
+//         cb(null, Date.now() + '-' + file.originalname)
+//     }
+// });
 
-const upload = multer({ storage: storage });
+// const upload = multer({ storage: storage });
 
 app.get('/msg', (req, res) => {
     res.status(200).send({
@@ -53,14 +53,14 @@ app.post('/sendMsg', async (req, res) => {
         res.status(500).send('Internal Server Error');
     }
 });
-
-app.post('/submit_form', upload.fields([
-    { name: 'uploadPhoto', maxCount: 1 },
-    { name: 'uploadCV', maxCount: 1 },
-    { name: 'uploadCertificates', maxCount: 5 }
-]), async (req, res) => {
+// , upload.fields([
+//     { name: 'uploadPhoto', maxCount: 1 },
+//     { name: 'uploadCV', maxCount: 1 },
+//     { name: 'uploadCertificates', maxCount: 1 }
+// ])
+app.post('/submit_form', async (req, res) => {
     const formData = req.body;
-    const files = req.files;
+    // const files = req.files;
 
     try {
         const client = new MongoClient(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true });
@@ -71,11 +71,11 @@ app.post('/submit_form', upload.fields([
 
         const data = {
             formData: formData,
-            uploadPhoto: files['uploadPhoto'][0].path,
-            uploadCertificates: files['uploadCertificates'][0].path,
-            uploadCV: files['uploadCV'][0].path
+            // uploadPhoto: files['uploadPhoto'][0].path,
+            // uploadCertificates: files['uploadCertificates'][0].path,
+            // uploadCV: files['uploadCV'][0].path
         };
-
+        console.log(data);
         await collection2.insertOne(data);
         res.send('Data inserted successfully into collection2');
     } catch (err) {
