@@ -45,8 +45,9 @@ app.post('/sendMsg', async (req, res) => {
         const collection1 = db.collection('contactData');
 
         await collection1.insertOne(formData);
-        res.send('Data inserted successfully into collection1');
-
+        // res.send('Data inserted successfully into collection1');
+        res.send({ message: 'Data sent successfully!' });
+        
         await client.close();
     } catch (err) {
         console.error('Error:', err);
