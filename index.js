@@ -76,7 +76,7 @@ app.post('/submit_form', async (req, res) => {
             // uploadCV: files['uploadCV'][0].path
         };
         console.log(data);
-        await collection2.insertOne(data);
+        await collection2.insertOne(formData);
         res.send('Data inserted successfully into collection2');
     } catch (err) {
         console.error('Error:', err);
