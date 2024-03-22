@@ -5,6 +5,9 @@ const multer = require('multer');
 const { MongoClient } = require('mongodb');
 const cors = require('cors');
 const { default: mongoose } = require('mongoose');
+// for filtering
+const path = require('path');
+const fs = require('fs');
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -34,6 +37,28 @@ app.get('/msg', (req, res) => {
     })
 });
 
+// Endpoint to get all teachers
+app.get('/teachers', (req, res) => {
+    // fs.readFile(path.join(__dirname, 'db.json'), 'utf8', (err, data) => {
+    //   if (err) {
+    //     res.status(500).send('Error reading teacher data');
+    //     return;
+    //   }
+    //   res.json(JSON.parse(data));
+    // });
+
+    fs.readFile(path.join(__dirname, 'db.json'), 'utf8', (err, data) => {
+        if (err) {
+          console.error('Error reading file:', err);
+          res.status(500).send('Error reading data file');
+        } else {
+          res.json(JSON.parse(data));
+        }
+      });
+
+  });
+
+
 app.post('/sendMsg', async (req, res) => {
     const formData = req.body;
 
@@ -53,11 +78,13 @@ app.post('/sendMsg', async (req, res) => {
         res.status(500).send('Internal Server Error');
     }
 });
+
 // , upload.fields([
 //     { name: 'uploadPhoto', maxCount: 1 },
 //     { name: 'uploadCV', maxCount: 1 },
 //     { name: 'uploadCertificates', maxCount: 1 }
 // ])
+
 app.post('/submit_form', async (req, res) => {
     const formData = req.body;
     // const files = req.files;
@@ -77,7 +104,8 @@ app.post('/submit_form', async (req, res) => {
         };
         console.log(data);
         await collection2.insertOne(formData);
-        res.send('Data inserted successfully into collection2');
+        // res.send('Data inserted successfully into collection2');
+        alert("Form Submitted Successfully")
     } catch (err) {
         console.error('Error:', err);
         res.status(500).send('Internal Server Error');
@@ -95,7 +123,29 @@ app.post('/enroll', async (req, res) => {
         const collection3 = db.collection('quickForm');
 
         await collection3.insertOne(formData);
-        res.send('Data inserted successfully into collection3');
+        // res.send('Data inserted successfully into collection3');
+        alert("Form Submitted Successfully")
+    } catch (err) {
+        console.error('Error:', err);
+        res.status(500).send('Internal Server Error');
+    }
+});
+
+app.post('/guideForm', async (req, res) => {
+    const formData = req.body;
+
+    try {
+        const client = new MongoClient(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true });
+        await client.connect();
+
+        const db = client.db('formsData'); 
+        const collection4 = db.collection('guideData');
+
+        await collection4.insertOne(formData);
+        // res.send('Data inserted successfully into collection1');
+        alert("Form Submitted Successfully")
+        
+        await client.close();
     } catch (err) {
         console.error('Error:', err);
         res.status(500).send('Internal Server Error');
