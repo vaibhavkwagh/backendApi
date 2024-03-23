@@ -8,6 +8,7 @@ const { default: mongoose } = require('mongoose');
 // for filtering
 const path = require('path');
 const fs = require('fs');
+const users = require("./db.json");
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -37,25 +38,59 @@ app.get('/msg', (req, res) => {
     })
 });
 
+app.get('/teachers',(req,res)=>{
+    fs.readFile(path.join(__dirname, 'db.json'), 'utf8', (err, data) => {
+            if (err) {
+              console.error('Error reading file:', err);
+              res.status(500).send('Error reading data file');
+            } else {
+              res.json(JSON.parse(data));
+            }
+        })
+})
+
 // Endpoint to get all teachers
-app.get('/teachers', (req, res) => {
-    // fs.readFile(path.join(__dirname, 'db.json'), 'utf8', (err, data) => {
-    //   if (err) {
-    //     res.status(500).send('Error reading teacher data');
-    //     return;
-    //   }
-    //   res.json(JSON.parse(data));
-    // });
+app.get('/filterteachers', (req, res) => {
 
     fs.readFile(path.join(__dirname, 'db.json'), 'utf8', (err, data) => {
         if (err) {
           console.error('Error reading file:', err);
           res.status(500).send('Error reading data file');
-        } else {
-          res.json(JSON.parse(data));
         }
-      });
+        // fs.readFile(path.join(__dirname, 'db.json'), 'utf8', (err, data) => {
+        //     if (err) {
+        //       console.error('Error reading file:', err);
+        //       res.status(500).send('Error reading data file');
+        //     } else {
+        //       res.json(JSON.parse(data));
+        //     }
 
+        try {
+            // Parse the JSON data
+            const jsonData = JSON.parse(data);
+      
+            // Extract query parameters
+            const { language, native } = req.query;
+      
+            // Filter teachers based on query parameters
+            let filteredTeachers = jsonData.teacher;
+            if (language) {
+              filteredTeachers = filteredTeachers.filter(teacher => teacher.language.toLowerCase() == language.toLowerCase());
+            }
+            if (native) {
+              filteredTeachers = filteredTeachers.filter(teacher => teacher.native.toLowerCase() == native.toLowerCase());
+            }
+      
+            // Send back the filtered teachers
+            res.json(filteredTeachers);
+          } catch (parseError) {
+            console.error('Error parsing JSON:', parseError);
+            res.status(500).send('Error parsing JSON data');
+          }
+
+
+
+      });
   });
 
 

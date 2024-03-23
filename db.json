@@ -1,101 +1,40 @@
 {
     "teacher": [
         {
-          "name": "Catherine Perry",
-          "language": "French",
-          "proflevel": "C2",
-          "certificate": "Alliance Delhi",
-          "noStud": "1000",
-          "experience": "5",
-          "noHours": "10000",
-          "native": "French",
-          "ytvideo":"https://www.youtube.com/embed/9PFi0a-NnlI?si=jxMrZ-b75SJgDpkl",
-          "imgurl": "https://www.shutterstock.com/image-photo/head-shot-portrait-close-smiling-600nw-1714666150.jpg"
-        },
-        {
-            "name": "Dojoslokia",
-            "language": "Russian",
-            "proflevel": "B1",
-            "certificate": "Alliance Delhi",
-            "noStud": "500",
-            "experience": "8",
-            "noHours": "20000",
-            "native": "Russian",
-            "ytvideo":"https://www.youtube.com/embed/TjxNg6toA2E?si=rQS2sE7iw1ccEgc8",
-            "imgurl": "data:image/jpeg;base64,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"
-        },
-        {
-            "name": "Ajay",
-            "language": "Russian",
-            "proflevel": "B1",
-            "certificate": "Alliance Delhi",
-            "noStud": "500",
-            "experience": "8",
-            "noHours": "20000",
-            "native": "Indian",
-            "ytvideo": "https://www.youtube.com/embed/AYRZupz6rdw?si=ubsCLDaE-mSZ4aIa   ",
-            "imgurl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT7ZQsrni23f7QEWYS2bz7tOFd8pAxKZvwmLELXub8F-LAYEt2qCtIoYW6L5zgbqvTGs3Q&usqp=CAU"
-        },
-        {
-            "name": "Savinay Kadam",
-            "language": "Russian",
-            "proflevel": "B1",
-            "certificate": "Alliance Delhi",
-            "noStud": "500",
-            "experience": "10",
-            "noHours": "20000",
-            "native": "Indian",
-            "ytvideo":"https://www.youtube.com/embed/TjxNg6toA2E?si=rQS2sE7iw1ccEgc8",
-            "imgurl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSdrPKWihQS5IfGfj3iqVAnnDrxXeuj67B2UvZlDSAPkE57dAfYJaSszOAtAlqdC1Ujyhs&usqp=CAU"
-        },
-        {
-            "name": "Albatroz angel",
-            "language": "English",
-            "proflevel": "C1",
-            "certificate": "Alliance Delhi",
-            "noStud": "700",
-            "experience": "7",
-            "noHours": "4000",
-            "native": "English",
-            "ytvideo":"https://www.youtube.com/embed/TjxNg6toA2E?si=rQS2sE7iw1ccEgc8",
-            "imgurl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSr9_v8REGMIGtXoTUYgdLR8mbK-llFzY8mbBXFejrX_vrw52ejEr9eQsT7acAzYyjjklw&usqp=CAU"
-        },
-        {
-            "name": "Jagdish Kadu",
-            "language": "English",
-            "proflevel": "C1",
-            "certificate": "Alliance Delhi",
+            "name": "Anuj Jindal",
+            "language": "French",
+            "proflevel": "B2",
+            "certificate": "",
             "noStud": "800",
-            "experience": "4",
+            "experience": "2 Yrs",
             "noHours": "1000",
             "native": "Indian",
-            "ytvideo":"https://www.youtube.com/embed/TjxNg6toA2E?si=rQS2sE7iw1ccEgc8",
-            "imgurl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRfeEbpC1ze__7DZZT5VLpCL94ezq29G7EYL7SMGN6QS9uysV5S9RCxI3bWX3Ljz4Pyapw&usqp=CAU"
-        },
-        {
-            "name": "Sarthak Pawar",
-            "language": "French",
-            "proflevel": "A1",
-            "certificate": "Alliance Delhi",
-            "noStud": "9000",
-            "experience": "10",
-            "noHours": "20000",
+            "ytvideo":"https://youtu.be/E7mxF3lePr8?si=aFkcpYVW1kajIs1Z",
+            "imgurl": ""
+          },
+          {
+            "name": "Namya Madan",
+            "language": "Spanish",
+            "proflevel": "B1",
+            "certificate": "",
+            "noStud": "30",
+            "experience": "2 Yrs",
+            "noHours": "200",
             "native": "Indian",
-            "ytvideo":"https://www.youtube.com/embed/TjxNg6toA2E?si=rQS2sE7iw1ccEgc8",
-            "imgurl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQdwFVQHO1Zm_WxMonXDPltWhtsMyz6yB0Qd45hQo_gmstpFdhcvTX5SNQLs-LrI_v_0aU&usqp=CAU"
-
-        },
-        {
-            "name": "Suyog Suryawanshi",
-            "language": "Hindi",
-            "proflevel": "A1",
-            "certificate": "Alliance Delhi",
-            "noStud": "8000",
-            "experience": "20",
-            "noHours": "90000",
+            "ytvideo":"https://youtu.be/e3QTQXmqWnM?si=QwuPMtNYCJS3L-q3",
+            "imgurl": ""
+          },
+          {
+            "name": "Sarim Ahmed",
+            "language": "Mandarin",
+            "proflevel": "HSK-5",
+            "certificate": "",
+            "noStud": "20",
+            "experience": "3 Yrs",
+            "noHours": "90",
             "native": "Indian",
-            "ytvideo":"https://www.youtube.com/embed/TjxNg6toA2E?si=rQS2sE7iw1ccEgc8",
-            "imgurl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTfxBwYG54GKij8F8eoSHNcaWj0biNWHT8_LLMc-SDL1ZE_JBO1KqNpqVx6uvoR03qYinQ&usqp=CAU"
-        }
+            "ytvideo":"https://youtu.be/zd9XnZAl8B0?si=c8_pkoi6mqMxw9Cd",
+            "imgurl": ""
+          }
       ]
 }
