@@ -105,7 +105,7 @@ app.post('/sendMsg', async (req, res) => {
         const collection1 = db.collection('contactData');
 
         await collection1.insertOne(formData);
-        res.send('Form submitted successfully ');
+        res.status(200).send('OK');
         
         await client.close();
     } catch (err) {
@@ -139,7 +139,8 @@ app.post('/submit_form', async (req, res) => {
         };
         console.log(data);
         await collection2.insertOne(formData);
-        res.send('Form submitted successfully ');
+        res.status(200).send('OK');
+        await client.close();
     } catch (err) {
         console.error('Error:', err);
         res.status(500).send('Internal Server Error');
@@ -157,7 +158,8 @@ app.post('/enroll', async (req, res) => {
         const collection3 = db.collection('quickForm');
 
         await collection3.insertOne(formData);
-        res.send('Form submitted successfully ');
+        res.status(200).send('OK');
+        await client.close();
     } catch (err) {
         console.error('Error:', err);
         res.status(500).send('Internal Server Error');
@@ -175,7 +177,7 @@ app.post('/guideForm', async (req, res) => {
         const collection4 = db.collection('guideData');
 
         await collection4.insertOne(formData);
-        res.send('Form submitted successfully ');
+        res.status(200).send('OK');
 
         await client.close();
     } catch (err) {
