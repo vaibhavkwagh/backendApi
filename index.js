@@ -9,6 +9,7 @@ const { default: mongoose } = require('mongoose');
 const path = require('path');
 const fs = require('fs');
 const users = require("./db.json");
+const blogs = require("./blogs.json");
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -92,6 +93,29 @@ app.get('/filterteachers', (req, res) => {
 
       });
   });
+
+// get api for blogs 
+app.get('/api/blogs',async(req,res)=>{
+    fs.readFile(path.join(__dirname, 'blogs.json'), 'utf8', (err, data) => {
+        if (err) {
+          console.error('Error reading file:', err);
+          res.status(500).send('Error reading data file');
+        } else {
+          res.json(JSON.parse(data));
+        }
+    })
+})
+
+// get api for single user
+app.get('/api/blogs/:id', (req, res) => {
+    const blogId = Number(req.params.id);
+    const blog = blogs.blogs.find((blog) => blog.id === blogId);
+    if (blog) {
+        res.json(blog);
+    } else {
+        res.status(404).json({ message: 'Blog not found' });
+    }
+});
 
 
 app.post('/sendMsg', async (req, res) => {
