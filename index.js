@@ -251,6 +251,25 @@ app.post("/submit_form", upload.fields([{ name: 'uploadPhoto', maxCount: 1 }, { 
   }
 });
 
+// get all api for teachers data 
+app.get('/api/teachers', async (req, res) => {
+  const client = new MongoClient(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true });
+
+  try {
+      await client.connect();
+      const db = client.db('formsData'); 
+      const collection = db.collection('teacherData'); 
+
+      const teachers = await collection.find({}).toArray(); // Fetch all blog documents
+      res.json(teachers);
+  } catch (err) {
+      console.error('Error:', err);
+      res.status(500).send('Internal Server Error');
+  } finally {
+      await client.close(); 
+  }
+});
+
 
 app.post("/enroll", async (req, res) => {
   const formData = req.body;
