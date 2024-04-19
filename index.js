@@ -2,7 +2,7 @@ const express = require("express");
 const app = express();
 const bodyParser = require("body-parser");
 const multer = require("multer");
-const { MongoClient } = require("mongodb");
+const { MongoClient, ObjectId } = require("mongodb");
 const cors = require("cors");
 const { default: mongoose } = require("mongoose");
 const { v2: cloudinary } = require("cloudinary");
@@ -18,6 +18,7 @@ const path = require("path");
 const fs = require("fs");
 const users = require("./db.json");
 const blogs = require("./blogs.json");
+const { error } = require("console");
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -240,7 +241,8 @@ app.post("/submit_form", upload.fields([{ name: 'uploadPhoto', maxCount: 1 }, { 
           date: new Date(),
           ...formData,
           uploadPhoto: imageUrl,
-          uploadCV: cvUrl
+          uploadCV: cvUrl,
+          remarks: ""
       };
 
       await collection.insertOne(dataToSave);
@@ -248,6 +250,47 @@ app.post("/submit_form", upload.fields([{ name: 'uploadPhoto', maxCount: 1 }, { 
   } catch (err) {
       console.error("Error:", err);
       res.status(500).send("Internal Server Error");
+  }
+});
+
+// patch api for teachers for updating remarks
+app.patch('/api/teachers/:id', async (req, res) => {
+  const updates = req.body;
+  const id = req.params.id;
+
+  // Check if the provided ID is valid
+  if (!ObjectId.isValid(id)) {
+      return res.status(400).json({ error: 'Invalid ID format' });
+  }
+
+  try {
+      const client = new MongoClient(mongoURI, {
+          useNewUrlParser: true,
+          useUnifiedTopology: true,
+      });
+
+      await client.connect();
+      const db = client.db("formsData");
+      const collection = db.collection("teacherData");
+
+      // Instantiate ObjectId with `new` when using it to construct query
+      const result = await collection.updateOne(
+          { _id: new ObjectId(id) }, // Correct usage of ObjectId with 'new'
+          { $set: updates }
+      );
+
+      if (result.matchedCount === 0) {
+          return res.status(404).json({ error: 'No matching document found' });
+      }
+
+      if (result.modifiedCount === 0) {
+          return res.status(200).json({ message: 'No changes made', details: result });
+      }
+
+      res.status(200).json({ message: 'Update successful', details: result });
+  } catch (err) {
+      console.error("Database update error:", err);
+      res.status(500).json({ error: 'Could not update the data', details: err.message });
   }
 });
 
