@@ -6,6 +6,7 @@ const { MongoClient, ObjectId } = require("mongodb");
 const cors = require("cors");
 const { default: mongoose } = require("mongoose");
 const { v2: cloudinary } = require("cloudinary");
+const compression = require("compression");
 
 cloudinary.config({
   cloud_name: "ddkfnfogy",
@@ -24,6 +25,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(express.static("public"));
 app.use(cors());
+app.use(compression());
 
 const storage = multer.diskStorage({
   filename: function (req, file, cb) {
