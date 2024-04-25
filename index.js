@@ -413,6 +413,14 @@ const client = new MongoClient(mongoURI, {
   useUnifiedTopology: true,
 });
 
+const storage = multer.diskStorage({
+  filename: function (req, file, cb) {
+      cb(null, Date.now() + '-' + file.originalname)
+  }
+});
+
+const upload = multer({ storage: storage });
+
 // Store data from JSON files in memory
 let teacherData;
 let blogData;
