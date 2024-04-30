@@ -236,6 +236,44 @@ app.patch("/api/blogs/:id", (req, res) => {
   });
 });
 
+// delete for blog using id
+app.delete("/api/delete/blogs/:id", (req, res) => {
+  const blogId = Number(req.params.id);  // Convert the ID from string to number
+
+  // Read the existing blogs from the file
+  fs.readFile(path.join(__dirname, "blogs.json"), "utf8", (err, data) => {
+    if (err) {
+      console.error("Error reading file:", err);
+      return res.status(500).send("Error reading data file");
+    }
+
+    let blogs;
+    try {
+      blogs = JSON.parse(data);
+    } catch (parseError) {
+      console.error("Error parsing JSON:", parseError);
+      return res.status(500).send("Error parsing data file");
+    }
+
+    // Check if the blog exists
+    const index = blogs.findIndex(blog => blog.id === blogId);
+    if (index === -1) {
+      return res.status(404).json({ message: "Blog not found" });
+    }
+
+    // Remove the blog from the array
+    blogs.splice(index, 1);
+
+    // Write the updated blog list back to the file
+    fs.writeFile(path.join(__dirname, "blogs.json"), JSON.stringify(blogs, null, 2), err => {
+      if (err) {
+        console.error("Error writing file:", err);
+        return res.status(500).send("Error saving data");
+      }
+      res.status(204).send("ok");  // No Content, indicating successful deletion
+    });
+  });
+});
 
 
 
