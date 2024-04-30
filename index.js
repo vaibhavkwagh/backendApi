@@ -118,15 +118,127 @@ app.get("/api/blogs", async (req, res) => {
 });
 
 // get api for single user
+// app.get("/api/blogs/:id", (req, res) => {
+//   const blogId = Number(req.params.id);
+//   const blog = blogs.blogs.find((blog) => blog.id === blogId);
+//   if (blog) {
+//     res.json(blog);
+//   } else {
+//     res.status(404).json({ message: "Blog not found" });
+//   }
+// });
 app.get("/api/blogs/:id", (req, res) => {
-  const blogId = Number(req.params.id);
-  const blog = blogs.blogs.find((blog) => blog.id === blogId);
-  if (blog) {
-    res.json(blog);
-  } else {
-    res.status(404).json({ message: "Blog not found" });
-  }
+  const blogId = Number(req.params.id); // Convert the ID from string to number
+
+  // Read the file where the blogs are stored
+  fs.readFile(path.join(__dirname, "blogs.json"), "utf8", (err, data) => {
+    if (err) {
+      console.error("Error reading file:", err);
+      return res.status(500).send("Error reading data file");
+    }
+
+    // Parse the data as JSON
+    const blogs = JSON.parse(data);
+
+    // Find the blog with the given ID
+    const blog = blogs.find(blog => blog.id === blogId);
+
+    if (blog) {
+      res.json(blog);
+    } else {
+      res.status(404).json({ message: "Blog not found" });
+    }
+  });
 });
+
+// post api for blogs
+app.post("/api/blogs", async (req, res) => {
+  const newBlog = req.body;  // Your new blog data should be in the body of the request
+  if (!newBlog.title || !newBlog.content) {
+    return res.status(400).send("Missing title or content");
+  }
+
+  fs.readFile(path.join(__dirname, "blogs.json"), "utf8", (err, data) => {
+    if (err) {
+      console.error("Error reading file:", err);
+      return res.status(500).send("Error reading data file");
+    }
+
+    let blogs;
+    try {
+      blogs = JSON.parse(data);
+    } catch (parseError) {
+      console.error("Error parsing JSON:", parseError);
+      return res.status(500).send("Error parsing data file");
+    }
+
+    if (!Array.isArray(blogs)) {
+      console.error("Expected an array but got:", blogs);
+      return res.status(500).send("Data structure in file is incorrect");
+    }
+
+    newBlog.id = blogs.length + 1; // Simple ID assignment (improvable)
+    blogs.push(newBlog);
+
+    fs.writeFile(path.join(__dirname, "blogs.json"), JSON.stringify(blogs, null, 2), err => {
+      if (err) {
+        console.error("Error writing file:", err);
+        return res.status(500).send("Error saving data");
+      }
+      res.status(201).send(newBlog);
+    });
+  });
+});
+
+
+// patch api for blogs
+app.patch("/api/blogs/:id", (req, res) => {
+  const blogId = Number(req.params.id);
+  const blogUpdates = req.body;
+
+  console.log('Received ID:', blogId);
+  console.log('Update data:', blogUpdates);
+
+  fs.readFile(path.join(__dirname, "blogs.json"), "utf8", (err, data) => {
+    if (err) {
+      console.error("Error reading file:", err);
+      return res.status(500).send("Error reading data file");
+    }
+
+    let blogs;
+    try {
+      blogs = JSON.parse(data);
+      console.log('Current blogs:', blogs);
+    } catch (parseError) {
+      console.error("Error parsing JSON:", parseError);
+      return res.status(500).send("Error parsing data file");
+    }
+
+    const index = blogs.findIndex(blog => blog.id === blogId);
+    if (index === -1) {
+      console.error("Blog not found for ID:", blogId);
+      return res.status(404).json({ message: "Blog not found" });
+    }
+
+    console.log('Original blog data:', blogs[index]);
+
+    blogs[index] = { ...blogs[index], ...blogUpdates };
+
+    console.log('Updated blog data:', blogs[index]);
+
+    fs.writeFile(path.join(__dirname, "blogs.json"), JSON.stringify(blogs, null, 2), err => {
+      if (err) {
+        console.error("Error writing file:", err);
+        return res.status(500).send("Error saving data");
+      }
+      res.json(blogs[index]);
+    });
+  });
+});
+
+
+
+
 
 app.post("/sendMsg", async (req, res) => {
   const formData = req.body;
