@@ -10,7 +10,7 @@
             "noHours": "1000",
             "native": "Indian",
             "ytvideo":"https://www.youtube.com/embed/aXTwNIoym4U?si=mu7FTibURWNzx7Fl",
-            "imgurl": "../images/meet the tutor/Anuj - French.png"
+            "imgurl": "https://res.cloudinary.com/ddkfnfogy/image/upload/v1715061311/Anuj_-_French_k5hmtp.png"
           },
           {
             "name": "Namya Madan",
@@ -22,7 +22,7 @@
             "noHours": "200",
             "native": "Indian",
             "ytvideo":"https://www.youtube.com/embed/e3QTQXmqWnM?si=c1Mc7ZsPE2-0PMSa",
-            "imgurl": "../images/meet the tutor/Namy - spanish.png"
+            "imgurl": "https://res.cloudinary.com/ddkfnfogy/image/upload/v1715061328/Namy_-_spanish_y5elh0.png"
           },
           {
             "name": "Sarim Ahmed",
@@ -34,7 +34,7 @@
             "noHours": "90",
             "native": "Indian",
             "ytvideo":"https://iframe.mediadelivery.net/embed/198197/069d6a63-ef2a-4ad2-b067-bf6b96491d5e?autoplay=true&loop=true&muted=false&preload=true&responsive=true",
-            "imgurl": "../images/meet the tutor/sarim - mandarin.png"
+            "imgurl": "https://res.cloudinary.com/ddkfnfogy/image/upload/v1715061334/sarim_-_mandarin_zsay0s.png"
           },
 
 
