@@ -105,174 +105,137 @@ app.get("/filterteachers", (req, res) => {
   });
 });
 
-// get api for blogs
-app.get("/api/blogs", async (req, res) => {
-  fs.readFile(path.join(__dirname, "blogs.json"), "utf8", (err, data) => {
-    if (err) {
-      console.error("Error reading file:", err);
-      res.status(500).send("Error reading data file");
-    } else {
-      res.json(JSON.parse(data));
-    }
-  });
-});
 
-// get api for single user
-// app.get("/api/blogs/:id", (req, res) => {
-//   const blogId = Number(req.params.id);
-//   const blog = blogs.blogs.find((blog) => blog.id === blogId);
-//   if (blog) {
-//     res.json(blog);
-//   } else {
-//     res.status(404).json({ message: "Blog not found" });
-//   }
-// });
-app.get("/api/blogs/:id", (req, res) => {
-  const blogId = Number(req.params.id); // Convert the ID from string to number
-
-  // Read the file where the blogs are stored
-  fs.readFile(path.join(__dirname, "blogs.json"), "utf8", (err, data) => {
-    if (err) {
-      console.error("Error reading file:", err);
-      return res.status(500).send("Error reading data file");
-    }
-
-    // Parse the data as JSON
-    const blogs = JSON.parse(data);
-
-    // Find the blog with the given ID
-    const blog = blogs.find(blog => blog.id === blogId);
-
-    if (blog) {
-      res.json(blog);
-    } else {
-      res.status(404).json({ message: "Blog not found" });
-    }
-  });
-});
-
-// post api for blogs
 app.post("/api/blogs", async (req, res) => {
-  const newBlog = req.body;  // Your new blog data should be in the body of the request
-  if (!newBlog.title || !newBlog.content) {
-    return res.status(400).send("Missing title or content");
-  }
+  const newBlog = req.body;
 
-  fs.readFile(path.join(__dirname, "blogs.json"), "utf8", (err, data) => {
-    if (err) {
-      console.error("Error reading file:", err);
-      return res.status(500).send("Error reading data file");
-    }
-
-    let blogs;
-    try {
-      blogs = JSON.parse(data);
-    } catch (parseError) {
-      console.error("Error parsing JSON:", parseError);
-      return res.status(500).send("Error parsing data file");
-    }
-
-    if (!Array.isArray(blogs)) {
-      console.error("Expected an array but got:", blogs);
-      return res.status(500).send("Data structure in file is incorrect");
-    }
-
-    newBlog.id = blogs.length + 1; // Simple ID assignment (improvable)
-    blogs.push(newBlog);
-
-    fs.writeFile(path.join(__dirname, "blogs.json"), JSON.stringify(blogs, null, 2), err => {
-      if (err) {
-        console.error("Error writing file:", err);
-        return res.status(500).send("Error saving data");
-      }
-      res.status(201).send(newBlog);
+  try {
+    const client = new MongoClient(mongoURI, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
     });
-  });
+    await client.connect();
+
+    const db = client.db("formsData");
+    const collection = db.collection("blogs");
+
+    await collection.insertOne(newBlog);
+    res.status(201).json(newBlog);
+
+    await client.close();
+  } catch (err) {
+    console.error("Error:", err);
+    res.status(500).send("Internal Server Error");
+  }
 });
 
+// GET route to retrieve all blogs
+app.get("/api/blogs", async (req, res) => {
+  try {
+    const client = new MongoClient(mongoURI, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
+    await client.connect();
 
-// patch api for blogs
-app.patch("/api/blogs/:id", (req, res) => {
-  const blogId = Number(req.params.id);
+    const db = client.db("formsData");
+    const collection = db.collection("blogs");
+
+    const blogs = await collection.find({}).toArray();
+    res.json(blogs);
+
+    await client.close();
+  } catch (err) {
+    console.error("Error:", err);
+    res.status(500).send("Internal Server Error");
+  }
+});
+
+// GET route to retrieve a single blog by ID
+app.get("/api/blogs/:id", async (req, res) => {
+  const blogId = req.params.id;
+
+  try {
+    const client = new MongoClient(mongoURI, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
+    await client.connect();
+
+    const db = client.db("formsData");
+    const collection = db.collection("blogs");
+
+    const blog = await collection.findOne({ id: blogId });
+    if (!blog) {
+      return res.status(404).json({ message: "Blog not found" });
+    }
+    res.json(blog);
+
+    await client.close();
+  } catch (err) {
+    console.error("Error:", err);
+    res.status(500).send("Internal Server Error");
+  }
+});
+
+// PATCH route to update a blog by ID
+app.patch("/api/blogs/:id", async (req, res) => {
+  const blogId = req.params.id;
   const blogUpdates = req.body;
 
-  console.log('Received ID:', blogId);
-  console.log('Update data:', blogUpdates);
+  try {
+    const client = new MongoClient(mongoURI, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
+    await client.connect();
 
-  fs.readFile(path.join(__dirname, "blogs.json"), "utf8", (err, data) => {
-    if (err) {
-      console.error("Error reading file:", err);
-      return res.status(500).send("Error reading data file");
-    }
+    const db = client.db("formsData");
+    const collection = db.collection("blogs");
 
-    let blogs;
-    try {
-      blogs = JSON.parse(data);
-      console.log('Current blogs:', blogs);
-    } catch (parseError) {
-      console.error("Error parsing JSON:", parseError);
-      return res.status(500).send("Error parsing data file");
-    }
+    const updatedBlog = await collection.findOneAndUpdate(
+      { id: blogId },
+      { $set: blogUpdates },
+      { returnOriginal: false }
+    );
 
-    const index = blogs.findIndex(blog => blog.id === blogId);
-    if (index === -1) {
-      console.error("Blog not found for ID:", blogId);
+    if (!updatedBlog.value) {
       return res.status(404).json({ message: "Blog not found" });
     }
+    res.json(updatedBlog.value);
 
-    console.log('Original blog data:', blogs[index]);
-
-    blogs[index] = { ...blogs[index], ...blogUpdates };
-
-    console.log('Updated blog data:', blogs[index]);
-
-    fs.writeFile(path.join(__dirname, "blogs.json"), JSON.stringify(blogs, null, 2), err => {
-      if (err) {
-        console.error("Error writing file:", err);
-        return res.status(500).send("Error saving data");
-      }
-      res.json(blogs[index]);
-    });
-  });
+    await client.close();
+  } catch (err) {
+    console.error("Error:", err);
+    res.status(500).send("Internal Server Error");
+  }
 });
 
-// delete for blog using id
-app.delete("/api/delete/blogs/:id", (req, res) => {
-  const blogId = Number(req.params.id);  // Convert the ID from string to number
+// DELETE route to delete a blog by ID
+app.delete("/api/delete/blogs/:id", async (req, res) => {
+  const blogId = req.params.id;
 
-  // Read the existing blogs from the file
-  fs.readFile(path.join(__dirname, "blogs.json"), "utf8", (err, data) => {
-    if (err) {
-      console.error("Error reading file:", err);
-      return res.status(500).send("Error reading data file");
-    }
+  try {
+    const client = new MongoClient(mongoURI, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
+    await client.connect();
 
-    let blogs;
-    try {
-      blogs = JSON.parse(data);
-    } catch (parseError) {
-      console.error("Error parsing JSON:", parseError);
-      return res.status(500).send("Error parsing data file");
-    }
+    const db = client.db("formsData");
+    const collection = db.collection("blogs");
 
-    // Check if the blog exists
-    const index = blogs.findIndex(blog => blog.id === blogId);
-    if (index === -1) {
+    const result = await collection.deleteOne({ id: blogId });
+    if (result.deletedCount === 0) {
       return res.status(404).json({ message: "Blog not found" });
     }
+    res.status(204).send("OK");
 
-    // Remove the blog from the array
-    blogs.splice(index, 1);
-
-    // Write the updated blog list back to the file
-    fs.writeFile(path.join(__dirname, "blogs.json"), JSON.stringify(blogs, null, 2), err => {
-      if (err) {
-        console.error("Error writing file:", err);
-        return res.status(500).send("Error saving data");
-      }
-      res.status(204).send("ok");  // No Content, indicating successful deletion
-    });
-  });
+    await client.close();
+  } catch (err) {
+    console.error("Error:", err);
+    res.status(500).send("Internal Server Error");
+  }
 });
 
 
