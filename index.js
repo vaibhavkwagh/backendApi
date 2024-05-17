@@ -153,7 +153,7 @@ app.get("/api/blogs", async (req, res) => {
 
 // GET route to retrieve a single blog by ID
 app.get("/api/blogs/:id", async (req, res) => {
-  const blogId = req.params.id;
+  const blogId = req.params._id;
 
   try {
     const client = new MongoClient(mongoURI, {
@@ -180,7 +180,7 @@ app.get("/api/blogs/:id", async (req, res) => {
 
 // PATCH route to update a blog by ID
 app.patch("/api/blogs/:id", async (req, res) => {
-  const blogId = req.params.id;
+  const blogId = req.params._id;
   const blogUpdates = req.body;
 
   try {
@@ -213,7 +213,7 @@ app.patch("/api/blogs/:id", async (req, res) => {
 
 // DELETE route to delete a blog by ID
 app.delete("/api/delete/blogs/:id", async (req, res) => {
-  const blogId = req.params.id;
+  const blogId = req.params._id;
 
   try {
     const client = new MongoClient(mongoURI, {
