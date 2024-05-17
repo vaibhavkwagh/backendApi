@@ -153,9 +153,14 @@ app.get("/api/blogs", async (req, res) => {
 
 // GET route to retrieve a single blog by ID
 app.get("/api/blogs/:id", async (req, res) => {
-  const blogId = req.params._id;
+  const blogId = req.params.id;
 
   try {
+    // Validate blogId as a valid ObjectId
+    if (!ObjectId.isValid(blogId)) {
+      return res.status(400).json({ message: "Invalid blog ID" });
+    }
+
     const client = new MongoClient(mongoURI, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
@@ -165,7 +170,10 @@ app.get("/api/blogs/:id", async (req, res) => {
     const db = client.db("formsData");
     const collection = db.collection("blogs");
 
-    const blog = await collection.findOne({ id: blogId });
+    // Convert blogId to ObjectId
+    const blogObjectId = new ObjectId(blogId);
+
+    const blog = await collection.findOne({ _id: blogObjectId });
     if (!blog) {
       return res.status(404).json({ message: "Blog not found" });
     }
