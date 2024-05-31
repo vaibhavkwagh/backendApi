@@ -249,7 +249,7 @@ app.delete("/api/delete/blogs/:id", async (req, res) => {
 
 
 
-
+// post for contact
 app.post("/sendMsg", async (req, res) => {
   const formData = req.body;
 
