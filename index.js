@@ -144,6 +144,8 @@ function verifyToken(req, res, next) {
 }
 
 
+
+
 app.get("/teachers", (req, res) => {
   fs.readFile(path.join(__dirname, "db.json"), "utf8", (err, data) => {
     if (err) {
@@ -202,6 +204,7 @@ app.get("/filterteachers", (req, res) => {
 
 app.post("/api/blogs", async (req, res) => {
   const newBlog = req.body;
+  newBlog.views = 1;
 
   try {
     const client = new MongoClient(mongoURI, {
@@ -269,9 +272,19 @@ app.get("/api/blogs/:id", async (req, res) => {
 
     const blog = await collection.findOne({ _id: blogObjectId });
     if (!blog) {
+      // await client.close();
       return res.status(404).json({ message: "Blog not found" });
     }
-    res.json(blog);
+
+    // Increment views count
+    const updatedBlog = await collection.findOneAndUpdate(
+      { _id: blogObjectId },
+      { $inc: { views: 1 } },
+      { returnDocument: 'after' } 
+    );
+
+    // res.json(updatedBlog.value);
+    res.json(blog)
 
     await client.close();
   } catch (err) {
