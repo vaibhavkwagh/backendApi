@@ -7,6 +7,11 @@ const cors = require("cors");
 const { default: mongoose } = require("mongoose");
 const { v2: cloudinary } = require("cloudinary");
 const compression = require("compression");
+const jwt = require("jsonwebtoken");
+const Schema = mongoose.Schema;
+const secretKey = "secretKey";
+// const bcrypt= "bcrypt";
+const bcrypt = require("bcryptjs");
 
 cloudinary.config({
   cloud_name: "ddkfnfogy",
@@ -45,11 +50,99 @@ mongoose
   })
   .catch((err) => console.log(err));
 
+// Define a user schema and model
+const userSchema = new mongoose.Schema({
+  username: String,
+  password: String, // Store hashed passwords (not applied till now)
+});
+
+const User = mongoose.model("admin", userSchema);
+
 app.get("/msg", (req, res) => {
   res.status(200).send({
     msg: "APIs are working successfully",
   });
 });
+
+// curiotory admin login api
+app.post("/register", async (req, res) => {
+  const { username, password } = req.body;
+
+  // Check if the username already exists
+  const existingUser = await User.findOne({ username });
+  if (existingUser) {
+    return res.status(400).json({ message: "Username already exists" });
+  }
+
+  const hashedPassword = await bcrypt.hash(password, 10);
+
+  const newUser = new User({
+    username,
+    password : hashedPassword, // Save plain text password (not recommended)
+  });
+
+  await newUser.save();
+  res.status(201).json({ message: "User registered successfully" });
+});
+
+// Authenticate user function
+const authenticateUser = async (username, password) => {
+  const user = await User.findOne({ username });
+  if (user && await bcrypt.compare(password, user.password)) {
+    console.log(user);
+    return user;
+  }
+  return null;  
+};
+
+// taking login details
+app.post("/login", async (req, res) => {
+  const { username, password } = req.body;
+
+  const user = await authenticateUser(username, password);
+  if (!user) {
+    return res.status(401).json({ message: "Invalid username or password" });
+  }
+
+  jwt.sign({ user }, secretKey, { expiresIn: "300s" }, (err, token) => {
+    if (err) {
+      return res.status(500).json({ message: "Internal server error" });
+    }
+    res.json({ token });
+  });
+});
+
+// for accessing the profile
+app.post("/profile", verifyToken, (req, res) => {
+  jwt.verify(req.token, secretKey, (err, authData) => {
+    if (err) {
+      res.send({
+        message: "Invalid Login",
+      });
+    } else {
+      res.json({
+        message: "profile accessed",
+        authData,
+      });
+    }
+  });
+});
+
+//   for verifying the token
+function verifyToken(req, res, next) {
+  const bearerHeader = req.headers["authorization"];
+  if (typeof bearerHeader !== "undefined") {
+    const bearer = bearerHeader.split(" ");
+    const token = bearer[1];
+    req.token = token;
+    next();
+  } else {
+    res.send({
+      result: "invalid login",
+    });
+  }
+}
+
 
 app.get("/teachers", (req, res) => {
   fs.readFile(path.join(__dirname, "db.json"), "utf8", (err, data) => {
