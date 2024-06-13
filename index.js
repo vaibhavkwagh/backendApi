@@ -204,6 +204,7 @@ app.get("/filterteachers", (req, res) => {
 
 app.post("/api/blogs", async (req, res) => {
   const newBlog = req.body;
+  newBlog.date = getCurrentDate();
   newBlog.views = 1;
 
   try {
@@ -225,6 +226,29 @@ app.post("/api/blogs", async (req, res) => {
     res.status(500).send("Internal Server Error");
   }
 });
+
+function getCurrentDate() {
+  const currentDate = new Date();
+  const day = currentDate.getDate();
+  const monthNames = [
+    "Jan",
+    "Feb",
+    "March",
+    "April",
+    "May",
+    "Jun",
+    "July",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
+  const month = monthNames[currentDate.getMonth()];
+  const year = currentDate.getFullYear();
+  return `${day} ${month} ${year}`;
+}
+
 
 // GET route to retrieve all blogs
 app.get("/api/blogs", async (req, res) => {
