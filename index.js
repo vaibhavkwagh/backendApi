@@ -54,6 +54,7 @@ mongoose
 const userSchema = new mongoose.Schema({
   username: String,
   password: String, // Store hashed passwords (not applied till now)
+  role: String
 });
 
 const User = mongoose.model("admin", userSchema);
@@ -64,9 +65,11 @@ app.get("/msg", (req, res) => {
   });
 });
 
+
+
 // curiotory admin login api
 app.post("/register", async (req, res) => {
-  const { username, password } = req.body;
+  const { username, password, role } = req.body;
 
   // Check if the username already exists
   const existingUser = await User.findOne({ username });
@@ -78,7 +81,8 @@ app.post("/register", async (req, res) => {
 
   const newUser = new User({
     username,
-    password : hashedPassword, // Save plain text password (not recommended)
+    password : hashedPassword, 
+    role
   });
 
   await newUser.save();
@@ -89,7 +93,6 @@ app.post("/register", async (req, res) => {
 const authenticateUser = async (username, password) => {
   const user = await User.findOne({ username });
   if (user && await bcrypt.compare(password, user.password)) {
-    console.log(user);
     return user;
   }
   return null;  
