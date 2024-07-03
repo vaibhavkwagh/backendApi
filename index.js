@@ -258,6 +258,26 @@ function getCurrentDate() {
 
 
 // GET route to retrieve all blogs
+// app.get("/api/blogs", async (req, res) => {
+//   try {
+//     const client = new MongoClient(mongoURI, {
+//       useNewUrlParser: true,
+//       useUnifiedTopology: true,
+//     });
+//     await client.connect();
+
+//     const db = client.db("formsData");
+//     const collection = db.collection("blogs");
+
+//     const blogs = await collection.find({}).toArray();
+//     res.json(blogs);
+
+//     await client.close();
+//   } catch (err) {
+//     console.error("Error:", err);
+//     res.status(500).send("Internal Server Error");
+//   }
+// });
 app.get("/api/blogs", async (req, res) => {
   try {
     const client = new MongoClient(mongoURI, {
@@ -269,7 +289,7 @@ app.get("/api/blogs", async (req, res) => {
     const db = client.db("formsData");
     const collection = db.collection("blogs");
 
-    const blogs = await collection.find({}).toArray();
+    const blogs = await collection.find({}).sort({ _id: -1 }).toArray(); // Sort in descending order
     res.json(blogs);
 
     await client.close();
