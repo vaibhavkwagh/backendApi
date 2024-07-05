@@ -346,7 +346,7 @@ app.get("/api/blogs/:id", async (req, res) => {
 
 // PATCH route to update a blog by ID
 app.patch("/api/blogs/:id", async (req, res) => {
-  const blogId = req.params._id;
+  const blogId = req.params.id;  // Corrected to access req.params.id
   const blogUpdates = req.body;
 
   try {
@@ -360,9 +360,9 @@ app.patch("/api/blogs/:id", async (req, res) => {
     const collection = db.collection("blogs");
 
     const updatedBlog = await collection.findOneAndUpdate(
-      { id: blogId },
+      { _id: new ObjectId(blogId) },  // Corrected to use ObjectId for _id
       { $set: blogUpdates },
-      { returnOriginal: false }
+      { returnDocument: 'after' }  // Use returnDocument instead of returnOriginal
     );
 
     if (!updatedBlog.value) {
