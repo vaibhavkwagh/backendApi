@@ -347,7 +347,7 @@ app.get("/api/blogs/:id", async (req, res) => {
 // PATCH route to update a blog by ID
 app.patch("/api/blogs/:id", async (req, res) => {
   const blogId = req.params.id;  // Corrected to access req.params.id
-  const blogUpdates = req.body;
+  const blogUpdates = req.body; 
 
   try {
     const client = new MongoClient(mongoURI, {
